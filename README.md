@@ -2,11 +2,11 @@
 
 ## Überblick
 
-**Praktikant:** [Name]  
+**Praktikant:** Samuel Ankomahene 
 **Betreuer:** Stephan Hamann  
-**Zeitraum:** [Startdatum] – [Enddatum] (6 Wochen)  
+**Zeitraum:** 16.03.2026 – 17.04.2026 (6 Wochen)  
 
-Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](https://hamann-solutions.de). Alle Projekte sind in separaten Repos verlinkt.
+Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](https://hamann-solutions.com). Alle Projekte sind in separaten Repos verlinkt.
 
 ---
 
@@ -27,7 +27,7 @@ Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](ht
 ## Workflow
 
 ### Issues
-Jede Aufgabe wird als GitHub Issue angelegt. Issue nehmen → Branch erstellen → coden → Pull Request.
+Jede Aufgabe wird als GitHub Issue angelegt. Issue nehmen → Branch erstellen → coden → Merge Request.
 
 ### Branches
 Nicht direkt auf `main` arbeiten. Für jede Aufgabe einen Branch erstellen:
@@ -35,8 +35,8 @@ Nicht direkt auf `main` arbeiten. Für jede Aufgabe einen Branch erstellen:
 git checkout -b feature/kontaktformular
 ```
 
-### Pull Requests
-Fertiger Branch → Pull Request erstellen → Code Review durch Stephan → Feedback einarbeiten → Merge.
+### Merge Requests
+Fertiger Branch → Merge Request erstellen → Code Review durch Stephan → Feedback einarbeiten → Merge.
 
 ### Commits
 Jeden Tag committen. Klare Commit-Messages schreiben:
