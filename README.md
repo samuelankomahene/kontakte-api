@@ -17,7 +17,8 @@ Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](ht
 | 1 | Hello World | [hello-world](https://github.com/noplanapp/hello-world) | Erste Webseite mit HTML, CSS & JS – live auf GitHub Pages |
 | 2 | Webserver | [webserver](https://github.com/noplanapp/webserver) | Lokaler Express-Server mit Routen und erstem API-Endpunkt |
 | 3 | Kontakte API | [kontakte-api](https://github.com/noplanapp/kontakte-api) | REST-API mit Express & SQL-Datenbank (CRUD) |
-| 4–5 | PlanFast Dashboard | [planfast-admin](https://github.com/noplanapp/planfast-admin) | Admin-Dashboard in React mit API-Anbindung – live auf Vercel |
+| 4 | Kontakte GUI | [kontakte-gui](https://github.com/noplanapp/kontakte-gui) | Frontend für die Kontakte-API – HTML/CSS/JS oder React |
+| 5 | PlanFast Dashboard | [planfast-admin](https://github.com/noplanapp/planfast-admin) | Admin-Dashboard MVP in React mit API-Anbindung |
 | 6 | Dokumentation | – | Code aufräumen, READMEs, Präsentation |
 
 ---
@@ -25,7 +26,7 @@ Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](ht
 ## Workflow
 
 ### Issues
-Jede Aufgabe wird als GitHub Issue angelegt. Issue nehmen → Branch erstellen → coden → Merge Request.
+Jede Aufgabe wird als GitHub Issue angelegt. Issue nehmen → Branch erstellen → coden → Pull Request.
 
 ### Branches
 Nicht direkt auf `main` arbeiten. Für jede Aufgabe einen Branch erstellen:
@@ -33,13 +34,13 @@ Nicht direkt auf `main` arbeiten. Für jede Aufgabe einen Branch erstellen:
 git checkout -b feature/kontaktformular
 ```
 
-### Merge Requests
-Fertiger Branch → Merge Request erstellen → Code Review durch Stephan → Feedback einarbeiten → Merge.
+### Pull Requests
+Fertiger Branch → Pull Request erstellen → Code Review durch Stephan → Feedback einarbeiten → Merge.
 
 ### Commits
 Jeden Tag committen. Klare Commit-Messages schreiben:
 ```
-git commit -m "Kontaktliste: GET-Endpunkt hinzugefügt"
+git commit -m "#2: Kontaktliste GET-Endpunkt hinzugefügt"
 ```
 
 ---
