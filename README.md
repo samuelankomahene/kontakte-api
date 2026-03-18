@@ -14,13 +14,11 @@ Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](ht
 
 | Woche | Projekt | Repo | Beschreibung |
 |---|---|---|---|
-| 1 | Hello World | [hello-world](#) | Erste Webseite mit HTML, CSS & JS – live auf GitHub Pages |
+| 1 | Hello World | [hello-world](https://github.com/noplanapp/hello-world) | Erste Webseite mit HTML, CSS & JS – live auf GitHub Pages |
 | 2 | Webserver | [webserver](#) | Lokaler Express-Server mit Routen und erstem API-Endpunkt |
 | 3 | Kontakte API | [kontakte-api](#) | REST-API mit Express & SQL-Datenbank (CRUD) |
 | 4–5 | PlanFast Dashboard | [planfast-admin](#) | Admin-Dashboard in React mit API-Anbindung – live auf Vercel |
 | 6 | Dokumentation | – | Code aufräumen, READMEs, Präsentation |
-
-> Links werden ergänzt sobald die Repos erstellt sind.
 
 ---
 
