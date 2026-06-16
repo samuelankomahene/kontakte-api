@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 # --- INFRASTRUCTURE HELPER ---
 def get_db_connection():
+    # Connects to the database and formats the output as a Python dictionary
     conn = sqlite3.connect('kontakte.db')
     conn.row_factory = sqlite3.Row 
     return conn
@@ -37,7 +38,6 @@ def get_einzelner_kontakt(id):
         kontakt_row = cursor.fetchone()
         conn.close()
 
-        # Error Handling: If the ID does not exist in the database
         if kontakt_row is None:
             return jsonify({"error": "Kontakt nicht gefunden"}), 404
 
@@ -49,10 +49,8 @@ def get_einzelner_kontakt(id):
 @app.route('/api/kontakte', methods=['POST'])
 def create_kontakt():
     try:
-        # Intercept the incoming HTTP Request Body
         neuer_kontakt = request.get_json()
         
-        # Validation: The database rule says 'name' is NOT NULL
         if not neuer_kontakt or 'name' not in neuer_kontakt:
             return jsonify({"error": "Bad Request: Feld 'name' ist ein Pflichtfeld"}), 400
 
@@ -63,7 +61,6 @@ def create_kontakt():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Execute the INSERT command securely using '?' placeholders
         cursor.execute('''
             INSERT INTO kontakte (name, email, telefon)
             VALUES (?, ?, ?)
@@ -71,11 +68,64 @@ def create_kontakt():
         
         conn.commit()
         
-        # Grab the auto-generated ID of the newly inserted row
         neue_id = cursor.lastrowid
         conn.close()
 
         return jsonify({"id": neue_id, "message": "Kontakt erfolgreich erstellt"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 4. UPDATE (PUT) - Aufgabe 6
+@app.route('/api/kontakte/<int:id>', methods=['PUT'])
+def update_kontakt(id):
+    try:
+        update_daten = request.get_json()
+        
+        if not update_daten or 'name' not in update_daten:
+            return jsonify({"error": "Bad Request: Feld 'name' ist ein Pflichtfeld"}), 400
+
+        name = update_daten['name']
+        email = update_daten.get('email', '')
+        telefon = update_daten.get('telefon', '')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE kontakte 
+            SET name = ?, email = ?, telefon = ? 
+            WHERE id = ?
+        ''', (name, email, telefon, id))
+        
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({"error": "Kontakt nicht gefunden"}), 404
+
+        conn.close()
+        return jsonify({"message": f"Kontakt {id} erfolgreich aktualisiert"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 5. DELETE - Aufgabe 7
+@app.route('/api/kontakte/<int:id>', methods=['DELETE'])
+def delete_kontakt(id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('DELETE FROM kontakte WHERE id = ?', (id,))
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            conn.close()
+            return jsonify({"error": "Kontakt nicht gefunden"}), 404
+
+        conn.close()
+        return '', 204 
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
