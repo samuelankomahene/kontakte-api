@@ -12,17 +12,48 @@ def get_db_connection():
 
 # --- REST API ENDPOINTS ---
 
-# 1. READ ALL (GET)
+# 1. READ ALL (GET) - Bonus Aufgabe 9 (Search, Sort, Pagination)
 @app.route('/api/kontakte', methods=['GET'])
 def get_alle_kontakte():
     try:
+        # 1. Extract Query Parameters from the URL
+        search = request.args.get('search', '')
+        sort = request.args.get('sort', 'id')  # Defaults to sorting by ID
+        limit = request.args.get('limit', type=int)
+        offset = request.args.get('offset', 0, type=int) # Defaults to 0
+
+        # 2. Start building the Base SQL Query
+        query = 'SELECT * FROM kontakte'
+        params = []
+
+        # 3. Apply Search Filter (WHERE)
+        if search:
+            # The % symbols are SQL wildcards. '%Max%' means "contains Max anywhere"
+            query += ' WHERE name LIKE ?'
+            params.append(f'%{search}%')
+
+        # 4. Apply Sorting (ORDER BY)
+        # WHITELIST: Only allow sorting by specific columns to prevent SQL Injection!
+        erlaubte_sortierungen = ['id', 'name', 'email', 'erstellt_am']
+        if sort in erlaubte_sortierungen:
+            query += f' ORDER BY {sort}'
+        else:
+            query += ' ORDER BY id' # Fallback if hacker tries to inject code
+
+        # 5. Apply Pagination (LIMIT & OFFSET)
+        if limit is not None:
+            query += ' LIMIT ? OFFSET ?'
+            params.extend([limit, offset])
+
+        # 6. Execute the final Dynamic Query
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM kontakte')
+        cursor.execute(query, params)
         kontakte_rows = cursor.fetchall()
         conn.close()
 
         return jsonify([dict(row) for row in kontakte_rows]), 200
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
