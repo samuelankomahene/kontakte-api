@@ -1,17 +1,19 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS  # <-- 1. Add this import right under the flask import
-
-app = Flask(__name__)
-CORS(app)  # <-- 2. Add this line directly under app = Flask(__name__)from flask import Flask, jsonify, request
+# --- CORE MODULE IMPORTS ---
 import sqlite3
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
+# --- SYSTEM INITIALIZATION ---
+# 1. Boot the Flask server engine
 app = Flask(__name__)
 
+# 2. Attach the Cross-Origin Resource Sharing (CORS) security middleware
+CORS(app)
 # --- INFRASTRUCTURE HELPER ---
 def get_db_connection():
-    # Connects to the database and formats the output as a Python dictionary
+    # Connects to the SQLite database and formats the output as a Python dictionary
     conn = sqlite3.connect('kontakte.db')
-    conn.row_factory = sqlite3.Row 
+    conn.row_factory = sqlite3.Row
     return conn
 
 # --- REST API ENDPOINTS ---
