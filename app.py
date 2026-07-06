@@ -1,4 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request, jsonify
+from flask_cors import CORS  # <-- 1. Add this import right under the flask import
+
+app = Flask(__name__)
+CORS(app)  # <-- 2. Add this line directly under app = Flask(__name__)from flask import Flask, jsonify, request
 import sqlite3
 
 app = Flask(__name__)
