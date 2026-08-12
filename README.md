@@ -1,65 +1,21 @@
-# IT-Praktikum bei Hamann Solutions
+# Kontakte API - Backend Infrastructure
 
-## Überblick
+## System Architecture
+This repository houses the backend REST-API for the Kontakte software ecosystem. It is engineered strictly with **Python** and **Flask**, utilizing a local **SQLite** database for persistent data storage. 
 
-**Praktikant:** Samuel Ankomahene 
-**Betreuer:** Stephan Hamann  
-**Zeitraum:** 16.03.2026 – 17.04.2026 (6 Wochen)  
+## Network Pipelines (REST Endpoints)
+This server is configured to intercept and route the following HTTP network requests:
+* `GET /api/kontakte` - Retrieves the full JSON payload of all contacts in the database.
+* `POST /api/kontakte` - Ingests a JSON payload to create a new database entry.
+* `PUT /api/kontakte/:id` - Updates an existing contact based on ID.
+* `DELETE /api/kontakte/:id` - Executes a database deletion command for a specific contact.
 
-Dieses Repo dient als Übersicht für das IT-Praktikum bei [Hamann Solutions](https://hamann-solutions.com). Alle Projekte sind in separaten Repos verlinkt.
+## Infrastructure Security
+* **CORS:** Cross-Origin Resource Sharing is natively configured via `flask-cors` to allow secure data transmission to the frontend client.
+* **SQL Injection Protection:** All SQLite database routing utilizes Parameterized Queries to prevent malicious data execution.
 
----
-
-## Projekte
-
-| Woche | Projekt | Repo | Beschreibung |
-|---|---|---|---|
-| 1 | Hello World | [hello-world](https://github.com/noplanapp/hello-world) | Erste Webseite mit HTML, CSS & JS – live auf GitHub Pages |
-| 2 | Webserver | [webserver](https://github.com/noplanapp/webserver) | Lokaler Express-Server mit Routen und erstem API-Endpunkt |
-| 3 | Kontakte API | [kontakte-api](https://github.com/noplanapp/kontakte-api) | REST-API mit Express & SQL-Datenbank (CRUD) |
-| 4 | Kontakte GUI | [kontakte-gui](https://github.com/noplanapp/kontakte-gui) | Frontend für die Kontakte-API – HTML/CSS/JS oder React |
-| 5 | PlanFast Dashboard | [planfast-admin](https://github.com/noplanapp/planfast-admin) | Admin-Dashboard MVP in React mit API-Anbindung |
-| 6 | Dokumentation | – | Code aufräumen, READMEs, Präsentation |
-
----
-
-## Workflow
-
-### Issues
-Jede Aufgabe wird als GitHub Issue angelegt. Issue nehmen → Branch erstellen → coden → Pull Request.
-
-### Branches
-Nicht direkt auf `main` arbeiten. Für jede Aufgabe einen Branch erstellen:
-```
-git checkout -b feature/kontaktformular
-```
-
-### Pull Requests
-Fertiger Branch → Pull Request erstellen → Code Review durch Stephan → Feedback einarbeiten → Merge.
-
-### Commits
-Jeden Tag committen. Klare Commit-Messages schreiben:
-```
-git commit -m "#2: Kontaktliste GET-Endpunkt hinzugefügt"
-```
-
----
-
-## Technologien
-
-- **Sprache:** JavaScript (durchgängig)
-- **Frontend:** HTML, CSS, React
-- **Backend:** Node.js, Express
-- **Datenbank:** SQL (SQLite)
-- **Deployment:** GitHub Pages, Vercel
-- **Tools:** Git, GitHub, VS Code, Terminal, Postman, npm
-
----
-
-## Lernressourcen
-
-- [MDN Web Docs](https://developer.mozilla.org/de/) – HTML, CSS, JavaScript Referenz
-- [Git Cheat Sheet](https://education.github.com/git-cheat-sheet-education.pdf) – Die wichtigsten Git-Befehle
-- [Express Docs](https://expressjs.com/) – Offizielle Express-Dokumentation
-- [SQL Tutorial (W3Schools)](https://www.w3schools.com/sql/) – SQL-Grundlagen
-- [React Docs](https://react.dev/) – Offizielle React-Dokumentation
+## Local Server Deployment
+To spin up this server environment locally:
+1. Activate the virtual environment: `source venv/bin/activate` (macOS/Linux)
+2. Install dependencies: `pip install -r requirements.txt`
+3. Boot the server: `python app.py`
