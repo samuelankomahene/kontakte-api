@@ -1,6 +1,8 @@
 # --- CORE MODULE IMPORTS ---
 import sqlite3
-from flask import Flask, request, jsonify
+import csv
+import io
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 # --- SYSTEM INITIALIZATION ---
@@ -62,6 +64,37 @@ def get_alle_kontakte():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# --- EXPORT ENDPOINT ---
+@app.route('/api/kontakte/export', methods=['GET'])
+def export_kontakte():
+    # 1. Open database connection and query all contacts
+    conn = get_db_connection()
+    kontakte = conn.execute('SELECT * FROM kontakte').fetchall()
+    conn.close()
+
+    # 2. Provision an in-memory text buffer (RAM) instead of saving a physical file
+    si = io.StringIO()
+    cw = csv.writer(si)
+
+    # 3. Write the CSV Headers dynamically based on the database columns
+    if kontakte:
+        cw.writerow(kontakte[0].keys())
+        
+        # 4. Loop through the data payload and write each row
+        for row in kontakte:
+            cw.writerow(row)
+
+    # 5. Extract the raw string data from the buffer
+    output = si.getvalue()
+
+    # 6. Transmit the data with custom HTTP headers forcing a file download
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=kontakte_export.csv"}
+    )
 
 # 2. READ SINGLE (GET by ID) - Aufgabe 4
 @app.route('/api/kontakte/<int:id>', methods=['GET'])
