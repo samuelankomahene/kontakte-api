@@ -14,7 +14,7 @@ CORS(app)
 # --- INFRASTRUCTURE HELPER ---
 def get_db_connection():
     # Connects to the SQLite database and formats the output as a Python dictionary
-    conn = sqlite3.connect('kontakte.db')
+    conn = sqlite3.connect('database/kontakte.db')
     conn.row_factory = sqlite3.Row
     return conn
 
