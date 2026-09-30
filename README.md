@@ -1,21 +1,29 @@
-# Kontakte API - Backend Infrastructure
+# Kontakte REST-API
 
-## System Architecture
-This repository houses the backend REST-API for the Kontakte software ecosystem. It is engineered strictly with **Python** and **Flask**, utilizing a local **SQLite** database for persistent data storage. 
+## Architecture Overview
+This repository contains a backend REST API for a contacts management system. It is engineered for a production environment hosted on a Hetzner Linux VPS, demonstrating full-stack system integration, daemonization, and strict traffic routing.
 
-## Network Pipelines (REST Endpoints)
-This server is configured to intercept and route the following HTTP network requests:
-* `GET /api/kontakte` - Retrieves the full JSON payload of all contacts in the database.
-* `POST /api/kontakte` - Ingests a JSON payload to create a new database entry.
-* `PUT /api/kontakte/:id` - Updates an existing contact based on ID.
-* `DELETE /api/kontakte/:id` - Executes a database deletion command for a specific contact.
+### Technology Stack
+- **Host OS:** Ubuntu Linux 24.04
+- **Web Server:** Nginx (Reverse Proxy)
+- **WSGI Server:** Gunicorn (Managed via `systemd`)
+- **Framework:** Python 3 / Flask
+- **Database:** SQLite3
 
-## Infrastructure Security
-* **CORS:** Cross-Origin Resource Sharing is natively configured via `flask-cors` to allow secure data transmission to the frontend client.
-* **SQL Injection Protection:** All SQLite database routing utilizes Parameterized Queries to prevent malicious data execution.
+## Infrastructure Traffic Flow
+The deployment architecture ensures strict separation of concerns and security:
+1. **UFW Firewall:** Only permits external traffic on OpenSSH (22), HTTP (80), and HTTPS (443).
+2. **Nginx Reverse Proxy:** Intercepts public HTTP traffic on Port 80 and securely forwards it internally.
+3. **Gunicorn WSGI:** Listens internally on Port 5000, managing the Python Flask application workers.
+4. **Flask Application:** Processes the REST constraints and executes CRUD operations against the `.db` file.
 
-## Local Server Deployment
-To spin up this server environment locally:
-1. Activate the virtual environment: `source venv/bin/activate` (macOS/Linux)
-2. Install dependencies: `pip install -r requirements.txt`
-3. Boot the server: `python app.py`
+## Deployment Instructions (Ubuntu Server)
+
+### 1. Environment Setup
+Clone the repository and isolate the dependencies:
+```bash
+git clone [https://github.com/samuelankomahene/kontakte-api.git](https://github.com/samuelankomahene/kontakte-api.git)
+cd kontakte-api
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
