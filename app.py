@@ -1,4 +1,5 @@
 # --- CORE MODULE IMPORTS ---
+import os
 import sqlite3
 import csv
 import io
@@ -6,54 +7,52 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 # --- SYSTEM INITIALIZATION ---
-# 1. Boot the Flask server engine
 app = Flask(__name__)
+CORS(app) # Enable Cross-Origin Resource Sharing for frontend integration
 
-# 2. Attach the Cross-Origin Resource Sharing (CORS) security middleware
-CORS(app)
 # --- INFRASTRUCTURE HELPER ---
 def get_db_connection():
-    # Connects to the SQLite database and formats the output as a Python dictionary
-    conn = sqlite3.connect('database/kontakte.db')
+    """
+    Establishes a connection to the SQLite database.
+    Uses absolute pathing to ensure stability when executed as a systemd daemon via Gunicorn.
+    """
+    # Dynamically resolve the absolute path to prevent systemd WorkingDirectory crashes
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(base_dir, 'database', 'kontakte.db')
+    
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
 # --- REST API ENDPOINTS ---
 
-# 1. READ ALL (GET) - Bonus Aufgabe 9 (Search, Sort, Pagination)
 @app.route('/api/kontakte', methods=['GET'])
 def get_alle_kontakte():
+    """ Retrieves all contacts with optional search, sort, and pagination parameters. """
     try:
-        # 1. Extract Query Parameters from the URL
         search = request.args.get('search', '')
-        sort = request.args.get('sort', 'id')  # Defaults to sorting by ID
+        sort = request.args.get('sort', 'id') 
         limit = request.args.get('limit', type=int)
-        offset = request.args.get('offset', 0, type=int) # Defaults to 0
+        offset = request.args.get('offset', 0, type=int)
 
-        # 2. Start building the Base SQL Query
         query = 'SELECT * FROM kontakte'
         params = []
 
-        # 3. Apply Search Filter (WHERE)
         if search:
-            # The % symbols are SQL wildcards. '%Max%' means "contains Max anywhere"
             query += ' WHERE name LIKE ?'
             params.append(f'%{search}%')
 
-        # 4. Apply Sorting (ORDER BY)
-        # WHITELIST: Only allow sorting by specific columns to prevent SQL Injection!
+        # Defense against SQL Injection using a strict Whitelist
         erlaubte_sortierungen = ['id', 'name', 'email', 'erstellt_am']
         if sort in erlaubte_sortierungen:
             query += f' ORDER BY {sort}'
         else:
-            query += ' ORDER BY id' # Fallback if hacker tries to inject code
+            query += ' ORDER BY id' 
 
-        # 5. Apply Pagination (LIMIT & OFFSET)
         if limit is not None:
             query += ' LIMIT ? OFFSET ?'
             params.extend([limit, offset])
 
-        # 6. Execute the final Dynamic Query
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(query, params)
@@ -65,45 +64,36 @@ def get_alle_kontakte():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# --- EXPORT ENDPOINT ---
 @app.route('/api/kontakte/export', methods=['GET'])
 def export_kontakte():
-    # 1. Open database connection and query all contacts
+    """ Exports the entire contacts database to a downloadable CSV file. """
     conn = get_db_connection()
     kontakte = conn.execute('SELECT * FROM kontakte').fetchall()
     conn.close()
 
-    # 2. Provision an in-memory text buffer (RAM) instead of saving a physical file
     si = io.StringIO()
     cw = csv.writer(si)
 
-    # 3. Write the CSV Headers dynamically based on the database columns
     if kontakte:
         cw.writerow(kontakte[0].keys())
-        
-        # 4. Loop through the data payload and write each row
         for row in kontakte:
             cw.writerow(row)
 
-    # 5. Extract the raw string data from the buffer
     output = si.getvalue()
 
-    # 6. Transmit the data with custom HTTP headers forcing a file download
     return Response(
         output,
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=kontakte_export.csv"}
     )
 
-# 2. READ SINGLE (GET by ID) - Aufgabe 4
 @app.route('/api/kontakte/<int:id>', methods=['GET'])
 def get_einzelner_kontakt(id):
+    """ Retrieves a single contact payload based on the provided ID. """
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Parameterized query using '?' to prevent SQL injection
         cursor.execute('SELECT * FROM kontakte WHERE id = ?', (id,))
         kontakt_row = cursor.fetchone()
         conn.close()
@@ -115,9 +105,9 @@ def get_einzelner_kontakt(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 3. CREATE (POST) - Aufgabe 5
 @app.route('/api/kontakte', methods=['POST'])
 def create_kontakt():
+    """ Ingests a JSON payload and creates a new database record. """
     try:
         neuer_kontakt = request.get_json()
         
@@ -137,7 +127,6 @@ def create_kontakt():
         ''', (name, email, telefon))
         
         conn.commit()
-        
         neue_id = cursor.lastrowid
         conn.close()
 
@@ -146,9 +135,9 @@ def create_kontakt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 4. UPDATE (PUT) - Aufgabe 6
 @app.route('/api/kontakte/<int:id>', methods=['PUT'])
 def update_kontakt(id):
+    """ Updates an existing database record based on the provided ID. """
     try:
         update_daten = request.get_json()
         
@@ -180,9 +169,9 @@ def update_kontakt(id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 5. DELETE - Aufgabe 7
 @app.route('/api/kontakte/<int:id>', methods=['DELETE'])
 def delete_kontakt(id):
+    """ Executes a database deletion command for a specific contact ID. """
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -202,4 +191,6 @@ def delete_kontakt(id):
 
 # --- SERVER BOOT ---
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    # SECURITY NOTICE: debug=True is strictly disabled for production environments.
+    # When deployed on Hetzner, Gunicorn bypasses this block and binds to 127.0.0.1:5000 directly.
+    app.run(port=3000, debug=False)
